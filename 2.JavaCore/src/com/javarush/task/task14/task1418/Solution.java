@@ -40,12 +40,11 @@ public class Solution {                                 // solved
     public static void main(String[] args) {
         List<Number> list = new LinkedList<Number>();
         //3
-
-
+        initList(list);
         //4 - Исправь 2 ошибки
-
-
+        printListValues(list);
         //5
+        processCastedObjects(list);
 
     }
 

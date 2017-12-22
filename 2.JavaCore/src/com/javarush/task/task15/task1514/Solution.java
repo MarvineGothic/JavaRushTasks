@@ -15,7 +15,7 @@ public class Solution {
 */
 
 public class Solution {         // solved
-    public static Map<Double, String> labels = new HashMap<Double, String>();
+    public static Map<Double, String> labels = new HashMap<>();
     static {
         labels.put(0.0, "a");
         labels.put(1.0, "b");

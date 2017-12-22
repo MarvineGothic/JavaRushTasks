@@ -2,27 +2,25 @@ package com.javarush.task.task15.task1516;
 
 /* 
 Значения по умолчанию
-public class Solution {
-    public static void main(String[] args) {
-    }
-}
 */
 
 public class Solution {          // solved
-    public static int intVar;
-    public static double doubleVar;
-    public static Double DoubleVar;
-    public static boolean booleanVar;
-    public static Object ObjectVar;
-    public static Exception ExceptionVar;
-    public static String StringVar;
+     int intVar;
+     double doubleVar;
+     Double DoubleVar;
+     boolean booleanVar;
+     Object ObjectVar;
+     Exception ExceptionVar;
+     String StringVar;
+
     public static void main(String[] args) {
-        System.out.println(intVar);
-        System.out.println(doubleVar);
-        System.out.println(DoubleVar);
-        System.out.println(booleanVar);
-        System.out.println(ObjectVar);
-        System.out.println(ExceptionVar);
-        System.out.println(StringVar);
+        Solution solution = new Solution();
+        System.out.println(solution.intVar);
+        System.out.println(solution.doubleVar);
+        System.out.println(solution.DoubleVar);
+        System.out.println(solution.booleanVar);
+        System.out.println(solution.ObjectVar);
+        System.out.println(solution.ExceptionVar);
+        System.out.println(solution.StringVar);
     }
 }

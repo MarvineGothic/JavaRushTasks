@@ -1,10 +1,8 @@
 package com.javarush.task.task15.task1519;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStreamReader;
 
 /* 
 Разные методы для разных типов
@@ -34,35 +32,32 @@ public class Solution {         // not solved
 public class Solution {         // solved
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        List<String> list = new ArrayList<String>();
         String s;
         while (true) {
             s = reader.readLine();
-            if (reader.readLine().equals("exit")) {
+            if (s.equals("exit")) {
                 break;
             }
-            list.add(s);
-        }
-        for (String val : list) {
-            if (val.contains(".")) {
-                print(Double.valueOf(val));
-            } else {
-                try {
-                    Integer in = Integer.valueOf(val);
+            try {
+                if (s.contains(".")) {
+                    print(Double.parseDouble(s));
+                } else {
+
+                    Integer in = Integer.parseInt(s);
                     if (in > 0 && in < 128) {
-                        print(Short.valueOf(val));
-                    } else if (in >= 128) {
+                        print(Short.parseShort(s));
+                    } else if (in >= 128 || in <= 0) {
                         print(in);
                     } else {
-                        print(val);
+                        print(s);
                     }
-                } catch (NumberFormatException e) {
-                    print(val);
                 }
+            } catch (NumberFormatException e) {
+                print(s);
             }
         }
-        //напиште тут ваш код
     }
+
 
     public static void print(Double value) {
         System.out.println("Это тип Double, значение " + value);

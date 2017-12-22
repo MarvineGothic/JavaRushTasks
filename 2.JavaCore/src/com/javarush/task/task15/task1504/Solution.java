@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Solution {          // solved
     public static void main(String[] args) {
-        List<Book> books = new LinkedList<Book>();
+        List<Book> books = new LinkedList<>();
         books.add(new MarkTwainBook("Tom Sawyer"));
         books.add(new AgathaChristieBook("Hercule Poirot"));
         System.out.println(books);
@@ -51,7 +51,7 @@ public class Solution {          // solved
         }
 
         @Override
-        public Book getBook() {
+        public MarkTwainBook getBook() {
             return this;
         }
 
@@ -70,7 +70,7 @@ public class Solution {          // solved
         }
 
         @Override
-        public Book getBook() {
+        public AgathaChristieBook getBook() {
             return this;
         }
 

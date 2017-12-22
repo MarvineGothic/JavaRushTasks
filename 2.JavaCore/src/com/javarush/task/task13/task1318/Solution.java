@@ -17,18 +17,18 @@ public class Solution {
 }
 */
 
-public class Solution {      // not solved
+public class Solution {      // solved
     public static void main(String[] args) throws IOException {
         // напишите тут ваш код
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String fileName = reader.readLine();
         FileInputStream stream = new FileInputStream(fileName);
-        Scanner sc = new Scanner(stream);
 
-        while (sc.hasNext())
+
+        while (stream.available()>0)
         {
-            Object x = sc.next();
-            System.out.println(x);
+           int data = stream.read();
+            System.out.print((char)data);
         }
         stream.close();
         reader.close();

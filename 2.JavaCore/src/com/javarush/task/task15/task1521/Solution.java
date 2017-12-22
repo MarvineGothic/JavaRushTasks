@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 ООП. Перегрузка
 */
 
-public class Solution {           // not solved
+public class Solution {           // solved
     public static void main(String[] args) {
         //Блок 2.
         //Вызов для Object

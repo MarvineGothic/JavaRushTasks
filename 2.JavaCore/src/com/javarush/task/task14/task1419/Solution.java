@@ -88,7 +88,7 @@ public class Solution {                      // solved
     private static void ArrayStoreException_Demo() {
         try {
             Object x[] = new String[3];
-            x[0] = new Integer(0);
+            x[0] = 0;
         } catch (ArrayStoreException e4) {
             exceptions.add(e4);
         }
@@ -98,7 +98,7 @@ public class Solution {                      // solved
     private static void ClassCastException_Demo() {
         String s = null;
         try {
-            Object x = new Integer(0);
+            Object x = 0;
             s = (String) x;
         } catch (ClassCastException e5) {
             exceptions.add(e5);

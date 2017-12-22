@@ -45,7 +45,7 @@ public class Solution {                       // solved
 
         Person(String name) {
             this.name = name;
-            this.allMoney = new ArrayList<Money>();
+            this.allMoney = new ArrayList<>();
             //напишите тут ваш код
             allMoney.add(new Hrivna(10));
             allMoney.add(new Ruble(15));

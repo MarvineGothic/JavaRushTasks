@@ -9,10 +9,6 @@ import java.io.InputStreamReader;
 */
 
 public class Solution {             // solved
-    public static void main(String[] args) {
-
-    }
-
     public static Planet thePlanet;
 
     //add static block here - добавьте статический блок тут
@@ -22,6 +18,10 @@ public class Solution {             // solved
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+
     }
 
     public static void readKeyFromConsoleAndInitPlanet() throws IOException {

@@ -9,28 +9,29 @@ public class Solution {
 
 */
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 public class Solution {                   // solved
     public static void main(String[] args) throws Exception {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String a = reader.readLine();
-        String b = reader.readLine();
-        int c = Integer.parseInt(a);
-        int d = Integer.parseInt(b);
+        Scanner scanner = new Scanner(System.in);
 
-        nod(c, d);
+        int num1;
+        int num2;
+        int nod = 0;
 
-    }
+        num1 = scanner.nextInt();
+        num2 = scanner.nextInt();
 
-    public static void nod(int a, int b) {
-        if (a > b) a = a - b;
-        else b = b - a;
-        if (b == 0) {
-            System.out.println(a);
-            return;
+        if (num1 <= 0 || num2 <= 0) {
+            throw new NumberFormatException();
         }
-        nod(a, b);
+
+        for (int i = 1; i <= Math.min(num1, num2); i++) {
+            if (num1 % i == 0 && num2 % i == 0 && i > nod) {
+                nod = i;
+            }
+        }
+
+        System.out.println(nod);
     }
 }
