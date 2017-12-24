@@ -1,6 +1,5 @@
 package com.javarush.task.task32.task3210;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -26,7 +25,7 @@ public class Solution {              // solved
     }
 
 
-    public static String convertByteToString (byte readBytes[]) {
+    public static String convertByteToString(byte readBytes[]) {
         return new String(readBytes);
     }
 }

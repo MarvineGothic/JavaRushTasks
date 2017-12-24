@@ -28,12 +28,12 @@ public class Solution {
 
 }
 */
-public class Solution {            // not solved
+public class Solution {            // solved
 
     public static void main(String[] args) throws IOException {
         SearchFileVisitor searchFileVisitor = new SearchFileVisitor();
 
-        /*searchFileVisitor.setPartOfName("amigo");
+        searchFileVisitor.setPartOfName("amigo");
         searchFileVisitor.setPartOfContent("programmer");
         searchFileVisitor.setMinSize(500);
         searchFileVisitor.setMaxSize(10000);
@@ -43,7 +43,7 @@ public class Solution {            // not solved
         List<Path> foundFiles = searchFileVisitor.getFoundFiles();
         for (Path file : foundFiles) {
             System.out.println(file);
-        }*/
+        }
     }
 
 }

@@ -39,11 +39,11 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
         queue.add(root);
         while (!queue.isEmpty()) {
             Entry<String> currentEntry = queue.remove();
-            if (!currentEntry.availableToAddRightChildren && currentEntry.rightChild!=null) {
+            if (!currentEntry.availableToAddRightChildren && currentEntry.rightChild != null) {
                 count++;
                 queue.add(currentEntry.rightChild);
             }
-            if (!currentEntry.availableToAddLeftChildren && currentEntry.leftChild!=null) {
+            if (!currentEntry.availableToAddLeftChildren && currentEntry.leftChild != null) {
                 count++;
                 queue.add(currentEntry.leftChild);
             }
@@ -61,7 +61,7 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
         boolean isAdded = false;
         while (!isAdded && !queue.isEmpty()) {
             Entry<String> currentEntry = queue.remove();
-            if (!currentEntry.availableToAddLeftChildren && currentEntry.leftChild!=null) {
+            if (!currentEntry.availableToAddLeftChildren && currentEntry.leftChild != null) {
                 queue.add(currentEntry.leftChild);
             } else {
                 if (!isAdded && currentEntry.availableToAddLeftChildren) {
@@ -72,7 +72,7 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
                     currentEntry.checkChildren();
                 }
             }
-            if (!currentEntry.availableToAddRightChildren && currentEntry.rightChild!=null) {
+            if (!currentEntry.availableToAddRightChildren && currentEntry.rightChild != null) {
                 queue.add(currentEntry.rightChild);
             } else {
                 if (!isAdded && currentEntry.availableToAddRightChildren) {
@@ -96,7 +96,7 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
         String parentName = null;
         while (parentName == null && !queue.isEmpty()) {
             Entry<String> currentEntry = queue.remove();
-            if (currentEntry.leftChild != null ) {
+            if (currentEntry.leftChild != null) {
                 if (!currentEntry.leftChild.elementName.equals(s)) {
                     queue.add(currentEntry.leftChild);
                 } else {
@@ -142,14 +142,31 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
         }
     }
 
-    public String set(int index, String element){ throw new UnsupportedOperationException();}
-    public void add(int index, String element){ throw new UnsupportedOperationException();}
-    public String remove(int index){ throw new UnsupportedOperationException();}
-    public List<String> subList(int fromIndex, int toIndex){ throw new UnsupportedOperationException();}
-    protected void removeRange(int fromIndex, int toIndex){ throw new UnsupportedOperationException();}
-    public boolean addAll(int index, Collection<? extends String> c){ throw new UnsupportedOperationException();}
+    public String set(int index, String element) {
+        throw new UnsupportedOperationException();
+    }
 
-    static class Entry<T> implements Serializable{
+    public void add(int index, String element) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String remove(int index) {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> subList(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected void removeRange(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean addAll(int index, Collection<? extends String> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    static class Entry<T> implements Serializable {
         String elementName;
         int lineNumber;
         boolean availableToAddLeftChildren, availableToAddRightChildren;
@@ -160,11 +177,13 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
             this.availableToAddLeftChildren = true;
             this.availableToAddRightChildren = true;
         }
-        public void checkChildren(){
+
+        public void checkChildren() {
             if (leftChild != null) availableToAddLeftChildren = false;
             if (rightChild != null) availableToAddRightChildren = false;
         }
-        public boolean isAvailableToAddChildren(){
+
+        public boolean isAvailableToAddChildren() {
             return availableToAddLeftChildren | availableToAddRightChildren;
         }
     }

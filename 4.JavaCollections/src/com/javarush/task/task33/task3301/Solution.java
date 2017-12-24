@@ -1,10 +1,6 @@
 package com.javarush.task.task33.task3301;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-
-/* 
+/*
 Первая сериализация в JSON
 
 public class Solution {       // not solved

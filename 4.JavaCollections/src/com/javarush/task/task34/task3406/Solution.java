@@ -1,9 +1,6 @@
 package com.javarush.task.task34.task3406;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/* 
+/*
 Слабые ссылки
 
 public class Solution {

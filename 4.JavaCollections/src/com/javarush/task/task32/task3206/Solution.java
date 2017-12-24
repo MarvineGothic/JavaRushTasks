@@ -1,8 +1,6 @@
 package com.javarush.task.task32.task3206;
 
-import java.lang.reflect.Proxy;
-
-/* 
+/*
 Дженерики для создания прокси-объекта
 public class Solution {
 
