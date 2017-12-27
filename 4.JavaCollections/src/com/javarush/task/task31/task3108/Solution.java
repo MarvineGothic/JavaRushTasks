@@ -19,7 +19,7 @@ public class Solution {
     }
 }
 */
-public class Solution {          // not solved
+public class Solution {          // solved
     public static void main(String[] args) throws IOException {
         Path path1 = Paths.get("D:/test/data/firstDir");
         Path path2 = Paths.get("D:/test/data/secondDir/third");
@@ -28,6 +28,6 @@ public class Solution {          // not solved
     }
 
     public static Path getDiffBetweenTwoPaths(Path path1, Path path2) {
-        return null;
+        return path1.relativize(path2);
     }
 }

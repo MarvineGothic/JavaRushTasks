@@ -1,9 +1,6 @@
 package com.javarush.task.task32.task3202;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 
 /* 
 Читаем из потока
@@ -18,13 +15,19 @@ public class Solution {
     }
 }
 */
-public class Solution {           // not solved
+public class Solution {           // solved
     public static void main(String[] args) throws IOException {
         StringWriter writer = getAllDataFromInputStream(new FileInputStream("testFile.log"));
         System.out.println(writer.toString());
     }
 
     public static StringWriter getAllDataFromInputStream(InputStream is) throws IOException {
-        return null;
+        StringWriter writer = new StringWriter();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            while (reader.ready()) writer.write(reader.readLine());
+        } catch (NullPointerException e) {
+            return writer = new StringWriter();
+        }
+        return writer;
     }
 }
