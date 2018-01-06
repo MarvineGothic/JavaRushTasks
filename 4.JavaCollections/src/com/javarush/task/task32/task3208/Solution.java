@@ -1,8 +1,12 @@
 package com.javarush.task.task32.task3208;
 
+import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 /* 
 RMI-2
@@ -44,7 +48,7 @@ public class Solution {
     }
 }
 */
-public class Solution {          // not solved
+public class Solution {          // solved
     public static Registry registry;
 
     //pretend we start rmi client as CLIENT_THREAD thread
@@ -70,6 +74,19 @@ public class Solution {          // not solved
         @Override
         public void run() {
             //напишите тут ваш код
+            try {
+                registry = LocateRegistry.createRegistry(2099);
+                Cat cat = new Cat("Cat");
+                Dog dog = new Dog("Dog");
+                Remote c = UnicastRemoteObject.exportObject(cat, 2099);
+                Remote d = UnicastRemoteObject.exportObject(dog, 2099);
+                registry.bind("catkey", c);
+                registry.bind("dogkey", d);
+            } catch (RemoteException e) {
+                e.printStackTrace(System.err);
+            } catch (AlreadyBoundException e) {
+                e.printStackTrace(System.err);
+            }
         }
     });
 

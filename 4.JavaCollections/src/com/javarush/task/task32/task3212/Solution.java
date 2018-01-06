@@ -24,7 +24,7 @@ public class Solution {
 
 */
 
-public class Solution {                   // not solved
+public class Solution {                   // solved
     public static void main(String[] args) {
         Service service = ServiceLocator.getService("EJBService");
         service.execute();
