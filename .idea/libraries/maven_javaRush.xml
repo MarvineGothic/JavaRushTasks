@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="maven.javaRush">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.javaLib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$USER_HOME$/.javaLib" recursive="false" />
+  </library>
+</component>

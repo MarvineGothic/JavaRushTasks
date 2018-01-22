@@ -1,5 +1,5 @@
 package com.javarush.task.task33.task3302;
-/*
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 
-Вторая сериализация в JSON
+//Вторая сериализация в JSON
 
-public class Solution {     // not solved
+public class Solution {     // solved
     public static void main(String[] args) throws IOException {
         Cat cat = new Cat();
         cat.name = "Murka";
@@ -30,16 +30,14 @@ public class Solution {     // not solved
 
     @JsonAutoDetect
     public static class Cat {
+        @JsonProperty(value = "wildAnimal")
         public String name;
-
+        @JsonIgnore
         public int age;
-
+        @JsonProperty(value = "over")
         public int weight;
 
         Cat() {
         }
     }
 }
-
-
-*/

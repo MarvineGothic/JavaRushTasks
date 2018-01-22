@@ -37,7 +37,6 @@ public class Solution {                   // solved
         System.out.println();
         service = ServiceLocator.getService("JMSService");
         service.execute();
-
     }
 
 }

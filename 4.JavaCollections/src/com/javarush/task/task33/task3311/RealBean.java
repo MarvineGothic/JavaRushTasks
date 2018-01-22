@@ -1,5 +1,5 @@
 package com.javarush.task.task33.task3311;
-/*
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -28,6 +28,7 @@ public class RealBean {
         return name;
     }
 
+    @JsonAnyGetter
     public Map<String, Object> getAdditionalMap() {
         return additionalMap;
     }
@@ -39,4 +40,3 @@ public class RealBean {
 }
 
 
-*/

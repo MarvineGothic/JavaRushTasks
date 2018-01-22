@@ -1,6 +1,5 @@
 package com.javarush.task.task33.task3311;
 
-/*
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -8,9 +7,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 
-Странная ошибка
+//Странная ошибка
 
-public class Solution {         // not solved
+public class Solution {         // solved
     public static void main(String[] args) throws IOException {
         StringWriter stringWriter = new StringWriter();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -22,5 +21,4 @@ public class Solution {         // not solved
     }
 }
 
-*/
 

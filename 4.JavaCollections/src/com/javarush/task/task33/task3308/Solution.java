@@ -8,7 +8,7 @@ import java.io.StringReader;
 /* 
 Создание класса по строке xml
 */
-public class Solution {            // not solved
+public class Solution {            // solved
     public static void main(String[] args) throws JAXBException {
         String xmlData =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
@@ -37,6 +37,6 @@ public class Solution {            // not solved
     }
 
     public static Class getClassName() {
-        return null;  //your class name
+        return Shop.class;  //your class name
     }
 }

@@ -1,6 +1,5 @@
 package com.javarush.task.task33.task3305;
 
-/*
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-Конвертация из одного класса в другой используя JSON
+//Конвертация из одного класса в другой используя JSON
 
-public class Solution {        // not solved
+public class Solution {        // solved
     public static void main(String[] args) throws IOException {
         Parking parking = new Parking("Super Parking", "Kyiv");
         RaceBike raceBike = new RaceBike("Simba", "Peter", 2);
@@ -33,5 +32,3 @@ public class Solution {        // not solved
         System.out.println(writer.toString());
     }
 }
-
-*/
