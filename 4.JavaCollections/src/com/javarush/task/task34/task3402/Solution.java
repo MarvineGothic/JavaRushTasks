@@ -16,7 +16,7 @@ public class Solution {
     }
 }
 */
-public class Solution {        // not solved
+public class Solution {        // solved
     public static void main(String[] args) {
         Solution solution = new Solution();
 
@@ -26,6 +26,11 @@ public class Solution {        // not solved
     }
 
     public int factorial(int n) {
-        return 0;
+        int i = 0;
+        if (n == 0 || n == 1) return 1;
+        if (n > 1) {
+            i = n * factorial(n - 1);
+        }
+        return i;
     }
 }

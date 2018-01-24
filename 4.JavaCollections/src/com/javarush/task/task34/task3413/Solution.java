@@ -13,7 +13,7 @@ public class Solution {
 }
 */
 
-public class Solution {         // not solved
+public class Solution {         // solved
     public static void main(String[] args) {
         SoftCache cache = new SoftCache();
 

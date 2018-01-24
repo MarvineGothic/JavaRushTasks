@@ -1,10 +1,33 @@
 package com.javarush.task.task34.task3405;
 
-/*
-Мягкие ссылки
+import java.lang.ref.SoftReference;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Solution {
+// Мягкие ссылки
+
+public class Solution {  // solved
     public static Helper helper = new Helper();
+
+    public static void main(String args[]) throws InterruptedException {
+        helper.startTime();
+
+        Monkey monkey = new Monkey("Simka");
+
+        //Add reference here
+        SoftReference<Monkey> reference = new SoftReference<>(monkey);
+        helper.callGC();
+
+        monkey = null;
+
+        helper.callGC();
+        helper.heapConsuming();
+
+        if (reference.get() == null)
+            System.out.println("Finalized");
+
+        helper.finish();
+    }
 
     public static class Monkey {
         private String name;
@@ -17,26 +40,6 @@ public class Solution {
             Helper.isFinalized = true;
             System.out.format("Bye-Bye, %s!\n", name);
         }
-    }
-
-    public static void main(String args[]) throws InterruptedException {
-        helper.startTime();
-
-        Monkey monkey = new Monkey("Simka");
-
-        //Add reference here
-
-        helper.callGC();
-
-        monkey = null;
-
-        helper.callGC();
-        helper.heapConsuming();
-
-        if (reference.get() == null)
-            System.out.println("Finalized");
-
-        helper.finish();
     }
 
     public static class Helper {
@@ -74,4 +77,3 @@ public class Solution {
         }
     }
 }
-*/

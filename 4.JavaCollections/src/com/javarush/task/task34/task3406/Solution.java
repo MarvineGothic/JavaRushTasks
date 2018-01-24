@@ -1,9 +1,12 @@
 package com.javarush.task.task34.task3406;
 
-/*
-Слабые ссылки
+//Слабые ссылки
 
-public class Solution {
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Solution { // solved
     public static Helper helper = new Helper();
 
     public static class Monkey {
@@ -25,6 +28,7 @@ public class Solution {
         Monkey monkey = new Monkey("Simka");
 
         //Add reference here
+        WeakReference<Monkey> reference=new WeakReference<Monkey>(monkey);
 
         helper.callGC();
 
@@ -77,4 +81,3 @@ public class Solution {
 
 
 
-*/
