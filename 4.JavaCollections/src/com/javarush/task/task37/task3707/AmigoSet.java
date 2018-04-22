@@ -20,6 +20,7 @@ public class AmigoSet<E> extends AbstractSet<E> implements Serializable, Cloneab
         addAll(collection);
     }
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
         AmigoSet initialAmigoSet = new AmigoSet<>();
 
