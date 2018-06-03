@@ -7,7 +7,8 @@ public class Solution {
     public static void main(String[] args) {
         LogParser logParser = new LogParser(Paths.get("c:/logs/"));
         System.out.println(logParser.getNumberOfUniqueIPs(null, new Date()));
-        System.out.println(logParser.getNumberOfUniqueIPs(null, null));
-        System.out.println(logParser.getIPsForUser("Amigo", null, null));
+        System.out.println(logParser.getNumberOfUserEvents("Eduard Petrovich Morozko", null,null));
+        System.out.println(logParser.getLoggedUsers(null, null));
+        System.out.println(logParser.getSolvedTaskUsers(null, null));
     }
 }

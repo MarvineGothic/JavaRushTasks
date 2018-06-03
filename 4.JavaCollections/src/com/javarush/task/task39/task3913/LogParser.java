@@ -1,57 +1,46 @@
 package com.javarush.task.task39.task3913;
 
 import com.javarush.task.task39.task3913.query.IPQuery;
+import com.javarush.task.task39.task3913.query.UserQuery;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
-public class LogParser implements IPQuery {
+public class LogParser implements IPQuery, UserQuery {
+
     private List<Log> logs = new ArrayList<>();
-    private String IPADDRESS_PATTERN =
-            "((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))";
-    private String NAME_PATTERN = "([\\w+\\s*]+)";
-    private String DATE_PATTERN = "(?:0?[1-9]|[12][0-9]|3[01]).(?:0?[1-9]|1[012]).(?:(?:19|20)\\d\\d)";
-    private String TIME_PATTERN = "(?:\\d\\d?):(?:\\d\\d?):(?:\\d\\d?)";
-    private String EVENT_PATTERN = "(LOGIN|DOWNLOAD_PLUGIN|WRITE_MESSAGE|SOLVE_TASK|DONE_TASK)(?:\\s+([0-9][0-9])?)?";
-    private String STATUS_PATTERN = "(OK|FAILED|ERROR)";
-    private String LOG_PATTERN = IPADDRESS_PATTERN + "\\s+" + NAME_PATTERN + "\\s+(" + DATE_PATTERN + "\\s+"
-            + TIME_PATTERN + ")\\s+" + EVENT_PATTERN + "\\s+" + STATUS_PATTERN;
-
-    private Pattern pattern = Pattern.compile(LOG_PATTERN);
-    private Matcher m;
 
     public LogParser(Path logDir) {
-        try (Stream<Path> paths = Files.walk(Paths.get(String.valueOf(logDir)))) {
-            paths
-                    .filter(Files::isRegularFile)
-                    .forEach(path -> createLog(path, logs));
-        } catch (IOException e) {
-            System.out.println("Error reading directory");
+        String event;
+        String taskNumber = null;
+
+        File[] logFiles = logDir.toFile().listFiles(pathname -> pathname.toString().endsWith(".log"));
+        for (File file : Objects.requireNonNull(logFiles)) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String s;
+                while ((s = reader.readLine()) != null) {
+                    String[] parts = s.split("\t");
+                    event = parts[3];
+                    if (parts[3].contains("TASK")) {
+                        String[] eventParts = parts[3].split(" ");
+                        event = eventParts[0];
+                        taskNumber = eventParts[1];
+                    }
+                    logs.add(new Log(parts[0], parts[1], parts[2], event, taskNumber, parts[4]));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public void createLog(Path path, List<Log> logs) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(path)))) {
-            String s;
-            while ((s = reader.readLine()) != null) {
-                if ((m = pattern.matcher(s)).matches())
-                    logs.add(new Log(m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6)));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public int getNumberOfUniqueIPs(Date after, Date before) {
@@ -89,19 +78,103 @@ public class LogParser implements IPQuery {
                 uniqueIPs.add(log.getIp());
         return uniqueIPs;
     }
+
+    @Override
+    public Set<String> getAllUsers() {
+        Set<String> users = new HashSet<>();
+        for (Log log : logs)
+            users.add(log.getUser());
+        return users;
+    }
+
+    @Override
+    public int getNumberOfUsers(Date after, Date before) {
+        Set<String> users = new HashSet<>();
+        for (Log log : logs)
+            if ((after == null || log.getDate().compareTo(after) >= 0) &&
+                    (before == null || log.getDate().compareTo(before) <= 0))
+                users.add(log.getUser());
+        return users.size();
+    }
+
+    @Override
+    public int getNumberOfUserEvents(String user, Date after, Date before) {
+        Set<String> events = new HashSet<>();
+        for (Log log : logs)
+            if ((log.getUser().equals(user)) && (after == null || log.getDate().compareTo(after) >= 0) &&
+                    (before == null || log.getDate().compareTo(before) <= 0))
+                events.add(log.getEvent().toString());
+        return events.size();
+    }
+
+    @Override
+    public Set<String> getUsersForIP(String ip, Date after, Date before) {
+        Set<String> users = new HashSet<>();
+        for (Log log : logs)
+            if ((ip == null || log.getIp().equals(ip)) &&
+                    (after == null || log.getDate().compareTo(after) >= 0) &&
+                    (before == null || log.getDate().compareTo(before) <= 0))
+                users.add(log.getUser());
+        return users;
+    }
+
+    @Override
+    public Set<String> getLoggedUsers(Date after, Date before) {
+        return getUserByEvent(null, Status.OK, null, after, before);
+    }
+
+    @Override
+    public Set<String> getDownloadedPluginUsers(Date after, Date before) {
+        return getUserByEvent(Event.DOWNLOAD_PLUGIN, Status.OK, null, after, before);
+    }
+
+    @Override
+    public Set<String> getWroteMessageUsers(Date after, Date before) {
+        return getUserByEvent(Event.WRITE_MESSAGE, Status.OK, null, after, before);
+    }
+
+    @Override
+    public Set<String> getSolvedTaskUsers(Date after, Date before) {
+        return new HashSet<>(getUserByEvent(Event.SOLVE_TASK, null, null, after, before));
+    }
+
+    @Override
+    public Set<String> getSolvedTaskUsers(Date after, Date before, int task) {
+        return getUserByEvent(Event.SOLVE_TASK, null, task, after, before);
+    }
+
+    @Override
+    public Set<String> getDoneTaskUsers(Date after, Date before) {
+        return getUserByEvent(Event.DONE_TASK, null, null, after, before);
+    }
+
+    @Override
+    public Set<String> getDoneTaskUsers(Date after, Date before, int task) {
+        return getUserByEvent(Event.DONE_TASK, null, task, after, before);
+    }
+
+    private Set<String> getUserByEvent(Event event, Status status, Integer task, Date after, Date before) {
+        Set<String> users = new HashSet<>();
+        for (Log log : logs)
+            if (((event == null || log.getEvent().equals(event)) && (status == null || log.getStatus().equals(status))) &&
+                    (task == null || log.getTaskNumber().equals(task)) &&
+                    (after == null || log.getDate().compareTo(after) >= 0) &&
+                    (before == null || log.getDate().compareTo(before) <= 0))
+                users.add(log.getUser());
+        return users;
+    }
 }
 
 class Log {
-    private DateFormat df = new SimpleDateFormat("DD.MM.yyyy HH:mm:ss");
+    private DateFormat df = new SimpleDateFormat("d.M.y H:m:s");
     private String ip;
     private String user;
     private Date date;
     private Event event;
-    private Integer taskNr;
+    private Integer taskNumber;
     private Status status;
 
-
-    public Log(String ip, String user, String date, String event, String taskNr, String status) {
+    public Log(String ip, String user, String date, String event, String taskNumber, String status) {
         this.ip = ip;
         this.user = user;
         try {
@@ -110,12 +183,11 @@ class Log {
             e.printStackTrace();
         }
         this.event = Event.valueOf(event);
-
-        if (taskNr == null) this.taskNr = null;
-        else this.taskNr = Integer.valueOf(taskNr);
-
+        if (taskNumber == null) this.taskNumber = null;
+        else this.taskNumber = Integer.valueOf(taskNumber);
         this.status = Status.valueOf(status);
     }
+
 
     public DateFormat getDf() {
         return df;
@@ -137,8 +209,8 @@ class Log {
         return event;
     }
 
-    public Integer getTaskNr() {
-        return taskNr;
+    public Integer getTaskNumber() {
+        return taskNumber;
     }
 
     public Status getStatus() {
@@ -146,6 +218,6 @@ class Log {
     }
 
     public String toString() {
-        return String.format("%s %s %s %s %s %s", ip, user, date, event, taskNr == null ? "" : taskNr.toString(), status);
+        return String.format("%s %s %s %s %s %s", ip, user, date, event, taskNumber == null ? "" : taskNumber.toString(), status);
     }
 }
