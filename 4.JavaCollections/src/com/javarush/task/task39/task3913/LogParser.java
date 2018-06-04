@@ -1,5 +1,6 @@
 package com.javarush.task.task39.task3913;
 
+import com.javarush.task.task39.task3913.query.DateQuery;
 import com.javarush.task.task39.task3913.query.IPQuery;
 import com.javarush.task.task39.task3913.query.UserQuery;
 
@@ -13,7 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class LogParser implements IPQuery, UserQuery {
+public class LogParser implements IPQuery, UserQuery, DateQuery {
 
     private List<Log> logs = new ArrayList<>();
 
@@ -39,8 +40,12 @@ public class LogParser implements IPQuery, UserQuery {
                 e.printStackTrace();
             }
         }
+        Collections.sort(logs);
     }
 
+    public List<Log> getLogs() {
+        return logs;
+    }
 
     @Override
     public int getNumberOfUniqueIPs(Date after, Date before) {
@@ -163,9 +168,65 @@ public class LogParser implements IPQuery, UserQuery {
                 users.add(log.getUser());
         return users;
     }
+
+    @Override
+    public Set<Date> getDatesForUserAndEvent(String user, Event event, Date after, Date before) {
+        return getDates(user, event, null, null, after, before);
+    }
+
+    @Override
+    public Set<Date> getDatesWhenSomethingFailed(Date after, Date before) {
+        return getDates(null, null, Status.FAILED, null, after, before);
+    }
+
+    @Override
+    public Set<Date> getDatesWhenErrorHappened(Date after, Date before) {
+        return getDates(null, null, Status.ERROR, null, after, before);
+    }
+
+    @Override
+    public Date getDateWhenUserLoggedFirstTime(String user, Date after, Date before) {
+        Set<Date> logs = this.getDates(user, Event.LOGIN, null, null, after, before);
+        return logs.isEmpty() ? null : Collections.min(logs);
+    }
+
+    @Override
+    public Date getDateWhenUserSolvedTask(String user, int task, Date after, Date before) {
+        Set<Date> solve = this.getDates(user, Event.SOLVE_TASK, null, task, after, before);
+        return solve.isEmpty() ? null : Collections.min(solve);
+    }
+
+    @Override
+    public Date getDateWhenUserDoneTask(String user, int task, Date after, Date before) {
+        Set<Date> done = this.getDates(user, Event.DONE_TASK, null, task, after, before);
+        return done.isEmpty() ? null : Collections.min(done);
+    }
+
+    @Override
+    public Set<Date> getDatesWhenUserWroteMessage(String user, Date after, Date before) {
+        return getDates(user, Event.WRITE_MESSAGE, null, null, after, before);
+    }
+
+    @Override
+    public Set<Date> getDatesWhenUserDownloadedPlugin(String user, Date after, Date before) {
+        return getDates(user, Event.DOWNLOAD_PLUGIN, null, null, after, before);
+    }
+
+    private Set<Date> getDates(String user, Event event, Status status, Integer task, Date after, Date before) {
+        Set<Date> dates = new HashSet<>();
+        for (Log log : logs)
+            if ((user == null || log.getUser().equals(user)) &&
+                    (event == null || log.getEvent().equals(event)) &&
+                    (status == null || log.getStatus().equals(status)) &&
+                    (task == null || log.getTaskNumber().equals(task)) &&
+                    (after == null || log.getDate().compareTo(after) >= 0) &&
+                    (before == null || log.getDate().compareTo(before) <= 0))
+                dates.add(log.getDate());
+        return dates;
+    }
 }
 
-class Log {
+class Log implements Comparable<Log> {
     private DateFormat df = new SimpleDateFormat("d.M.y H:m:s");
     private String ip;
     private String user;
@@ -219,5 +280,10 @@ class Log {
 
     public String toString() {
         return String.format("%s %s %s %s %s %s", ip, user, date, event, taskNumber == null ? "" : taskNumber.toString(), status);
+    }
+
+    @Override
+    public int compareTo(Log o) {
+        return this.date.compareTo(o.getDate());
     }
 }
