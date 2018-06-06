@@ -1,32 +1,35 @@
 package com.javarush.task.task39.task3913;
 
-import com.javarush.task.task39.task3913.query.DateQuery;
-import com.javarush.task.task39.task3913.query.IPQuery;
-import com.javarush.task.task39.task3913.query.UserQuery;
+import com.javarush.task.task39.task3913.query.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class LogParser implements IPQuery, UserQuery, DateQuery {
+public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQuery {
 
     private List<Log> logs = new ArrayList<>();
 
     public LogParser(Path logDir) {
-        String event;
-        String taskNumber = null;
+
 
         File[] logFiles = logDir.toFile().listFiles(pathname -> pathname.toString().endsWith(".log"));
         for (File file : Objects.requireNonNull(logFiles)) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String s;
                 while ((s = reader.readLine()) != null) {
+                    String event = null;
+                    String taskNumber = null;
                     String[] parts = s.split("\t");
                     event = parts[3];
                     if (parts[3].contains("TASK")) {
@@ -41,6 +44,12 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
             }
         }
         Collections.sort(logs);
+    }
+
+    private String getMethodName(String string) {
+        char[] s = string.replace(" ", "").toCharArray();
+        s[3] = Character.toUpperCase(s[3]);
+        return new String(s);
     }
 
     public List<Log> getLogs() {
@@ -223,6 +232,151 @@ public class LogParser implements IPQuery, UserQuery, DateQuery {
                     (before == null || log.getDate().compareTo(before) <= 0))
                 dates.add(log.getDate());
         return dates;
+    }
+
+    @Override
+    public int getNumberOfAllEvents(Date after, Date before) {
+        return new HashSet<>(getEvents(null, null, null, null, null, after, before)).size();
+    }
+
+    @Override
+    public Set<Event> getAllEvents(Date after, Date before) {
+        return new HashSet<>(getEvents(null, null, null, null, null, after, before));
+    }
+
+    @Override
+    public Set<Event> getEventsForIP(String ip, Date after, Date before) {
+        return new HashSet<>(getEvents(ip, null, null, null, null, after, before));
+    }
+
+    @Override
+    public Set<Event> getEventsForUser(String user, Date after, Date before) {
+        return new HashSet<>(getEvents(null, user, null, null, null, after, before));
+    }
+
+    @Override
+    public Set<Event> getFailedEvents(Date after, Date before) {
+        return new HashSet<>(getEvents(null, null, null, Status.FAILED, null, after, before));
+    }
+
+    @Override
+    public Set<Event> getErrorEvents(Date after, Date before) {
+        return new HashSet<>(getEvents(null, null, null, Status.ERROR, null, after, before));
+    }
+
+    @Override
+    public int getNumberOfAttemptToSolveTask(int task, Date after, Date before) {
+        return getEvents(null, null, Event.SOLVE_TASK, null, task, after, before).size();
+    }
+
+    @Override
+    public int getNumberOfSuccessfulAttemptToSolveTask(int task, Date after, Date before) {
+        return getEvents(null, null, Event.DONE_TASK, null, task, after, before).size();
+    }
+
+    @Override
+    public Map<Integer, Integer> getAllSolvedTasksAndTheirNumber(Date after, Date before) {
+        Map<Integer, Integer> solved = new HashMap<>();
+
+        for (Integer task : getTasks(Event.SOLVE_TASK, after, before))
+            solved.put(task, getEvents(null, null, Event.SOLVE_TASK, null, task, after, before).size());
+        return solved;
+    }
+
+    @Override
+    public Map<Integer, Integer> getAllDoneTasksAndTheirNumber(Date after, Date before) {
+        Map<Integer, Integer> done = new HashMap<>();
+        for (Integer task : getTasks(Event.DONE_TASK, after, before))
+            done.put(task, getEvents(null, null, Event.DONE_TASK, null, task, after, before).size());
+        return done;
+    }
+
+    private List<Event> getEvents(String ip, String user, Event event, Status status, Integer task, Date after, Date before) {
+        List<Event> events = new ArrayList<>();
+        for (Log log : logs)
+            if ((ip == null || log.getIp().equals(ip)) &&
+                    (user == null || log.getUser().equals(user)) &&
+                    (event == null || log.getEvent().equals(event)) &&
+                    (status == null || log.getStatus().equals(status)) &&
+                    (task == null || task.equals(log.getTaskNumber())) &&
+                    (after == null || log.getDate().compareTo(after) >= 0) &&
+                    (before == null || log.getDate().compareTo(before) <= 0))
+                events.add(log.getEvent());
+        return events;
+    }
+
+    private Set<Integer> getTasks(Event event, Date after, Date before) {
+        Set<Integer> tasks = new HashSet<>();
+        for (Log log : logs)
+            if ((event == null || log.getEvent().equals(event)) &&
+                    (after == null || log.getDate().compareTo(after) >= 0) &&
+                    (before == null || log.getDate().compareTo(before) <= 0) &&
+                    log.getTaskNumber() != null)
+                tasks.add(log.getTaskNumber());
+        return tasks;
+    }
+
+    @Override
+    public Set<Object> execute(String query) {
+        String fullQuery = "(get\\s+[a-z]+)\\s+for\\s+([a-z]+)\\s+=\\s+\"(.+)\"";
+        String simpleQuery = "(get\\s+[a-z]+)";
+        Pattern pattern = Pattern.compile(fullQuery);
+        Matcher m = pattern.matcher(query);
+
+        if (m.matches())
+            return getObjects(getMethodName(m.group(1)), m.group(2), m.group(3));
+        else {
+            pattern = Pattern.compile(simpleQuery);
+            m = pattern.matcher(query);
+            if (m.matches())
+                return getObjects(getMethodName(query), "", null);
+        }
+        return new HashSet<>();
+    }
+
+    private Set<Object> getObjects(String method, String second, String value) {
+        String ip = null;
+        String user = null;
+        String event = null;
+        String status = null;
+        String date = null;
+        if (!second.isEmpty())
+            switch (second) {
+                case "ip":
+                    ip = value;
+                    break;
+                case "user":
+                    user = value;
+                    break;
+                case "event":
+                    event = value;
+                    break;
+                case "status":
+                    status = value;
+                    break;
+                case "date":
+                    date = value;
+                    break;
+                default:
+                    System.out.println("Wrong parameter");
+                    break;
+            }
+
+        Set<Object> objects = new HashSet<>();
+        try {
+            Method m = Log.class.getMethod(method);
+            for (Log log : logs)
+                if ((ip == null || log.getIp().equals(ip)) &&
+                        (user == null || log.getUser().equals(user)) &&
+                        (event == null || log.getEvent().equals(Event.valueOf(event))) &&
+                        (status == null || log.getStatus().equals(Status.valueOf(status))) &&
+                        (date == null || log.getDate().compareTo(log.getDf().parse(date)) == 0))
+                    objects.add(m.invoke(log));
+
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | ParseException e) {
+            System.out.println("No such method " + method);
+        }
+        return objects;
     }
 }
 
