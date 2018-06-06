@@ -28,7 +28,7 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String s;
                 while ((s = reader.readLine()) != null) {
-                    String event = null;
+                    String event;
                     String taskNumber = null;
                     String[] parts = s.split("\t");
                     event = parts[3];
@@ -318,30 +318,40 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
 
     @Override
     public Set<Object> execute(String query) {
-        String fullQuery = "(get\\s+[a-z]+)\\s+for\\s+([a-z]+)\\s+=\\s+\"(.+)\"";
         String simpleQuery = "(get\\s+[a-z]+)";
-        Pattern pattern = Pattern.compile(fullQuery);
+        String fullQuery = simpleQuery + "\\s+for\\s+([a-z]+)\\s+=\\s+\"(.+)\"";
+        String extendedQuery = fullQuery + "\\s+and\\s+date\\s+between\\s+\"(.+)\"\\s+and\\s+\"(.+)\"";
+
+        Pattern pattern = Pattern.compile(extendedQuery);
         Matcher m = pattern.matcher(query);
 
+        // check extended query
         if (m.matches())
-            return getObjects(getMethodName(m.group(1)), m.group(2), m.group(3));
+            return getObjects(getMethodName(m.group(1)), m.group(2), m.group(3), m.group(4), m.group(5));
+        // check full query
+        pattern = Pattern.compile(fullQuery);
+        m = pattern.matcher(query);
+        if (m.matches())
+            return getObjects(getMethodName(m.group(1)), m.group(2), m.group(3), null, null);
         else {
+            // simple query
             pattern = Pattern.compile(simpleQuery);
             m = pattern.matcher(query);
             if (m.matches())
-                return getObjects(getMethodName(query), "", null);
+                return getObjects(getMethodName(query), "", null, null, null);
         }
         return new HashSet<>();
     }
 
-    private Set<Object> getObjects(String method, String second, String value) {
+    private Set<Object> getObjects(String method, String parameter, String value, String after, String before) {
         String ip = null;
         String user = null;
         String event = null;
         String status = null;
         String date = null;
-        if (!second.isEmpty())
-            switch (second) {
+
+        if (!parameter.isEmpty())
+            switch (parameter) {
                 case "ip":
                     ip = value;
                     break;
@@ -370,7 +380,9 @@ public class LogParser implements IPQuery, UserQuery, DateQuery, EventQuery, QLQ
                         (user == null || log.getUser().equals(user)) &&
                         (event == null || log.getEvent().equals(Event.valueOf(event))) &&
                         (status == null || log.getStatus().equals(Status.valueOf(status))) &&
-                        (date == null || log.getDate().compareTo(log.getDf().parse(date)) == 0))
+                        (date == null || log.getDate().compareTo(log.getDf().parse(date)) == 0) &&
+                        (after == null || log.getDate().compareTo(log.getDf().parse(after)) > 0) &&
+                        (before == null || log.getDate().compareTo(log.getDf().parse(before)) < 0))
                     objects.add(m.invoke(log));
 
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | ParseException e) {
